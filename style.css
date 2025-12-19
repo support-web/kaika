@@ -1,0 +1,617 @@
+/* =====================================================
+   金運開花の扉 - スタイルシート
+   テーマ: 白×金、神秘的で洗練されたデザイン
+   ===================================================== */
+
+/* リセット・基本設定 */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* カラーパレット */
+    --color-white: #FFFFFF;
+    --color-white-soft: #FAFAFA;
+    --color-gold: #D4AF37;
+    --color-gold-light: #E8D082;
+    --color-gold-dark: #B8960C;
+    --color-text: #333333;
+    --color-text-light: #666666;
+    --color-line-green: #06C755;
+
+    /* グラデーション */
+    --gradient-gold: linear-gradient(135deg, #D4AF37 0%, #F5E6A3 50%, #D4AF37 100%);
+    --gradient-gold-shine: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    --gradient-hero-bg: linear-gradient(180deg, #FAFAFA 0%, #FFF9E6 100%);
+
+    /* フォント */
+    --font-sans: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
+    --font-serif: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+
+    /* シャドウ */
+    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --shadow-gold: 0 4px 30px rgba(212, 175, 55, 0.3);
+    --shadow-card: 0 10px 40px rgba(0, 0, 0, 0.1);
+
+    /* トランジション */
+    --transition-base: 0.3s ease;
+    --transition-slow: 0.6s ease;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-sans);
+    color: var(--color-text);
+    background-color: var(--color-white);
+    line-height: 1.8;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* コンテナ */
+.container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* =====================================================
+   A. ヒーローセクション（トップ画面）
+   ===================================================== */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-hero-bg);
+    position: relative;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+}
+
+/* サイトロゴ */
+.site-logo {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 8vw, 3rem);
+    font-weight: 700;
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    letter-spacing: 0.1em;
+}
+
+/* キャッチコピー */
+.catchcopy {
+    font-family: var(--font-serif);
+    font-size: clamp(0.9rem, 4vw, 1.2rem);
+    color: var(--color-text-light);
+    letter-spacing: 0.2em;
+}
+
+/* メインビジュアル（扉） */
+.main-visual {
+    width: 100%;
+    max-width: 300px;
+    aspect-ratio: 3 / 4;
+    margin: 20px 0;
+}
+
+.door-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    perspective: 1000px;
+}
+
+.door {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(180deg, #E8D082 0%, #D4AF37 50%, #B8960C 100%);
+    border: 3px solid var(--color-gold-dark);
+    box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.3);
+    transition: transform 0.8s ease;
+    transform-style: preserve-3d;
+}
+
+.door::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    background: var(--color-gold-dark);
+    border-radius: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.door-left {
+    left: 0;
+    border-radius: 10px 0 0 10px;
+    transform-origin: left center;
+}
+
+.door-left::before {
+    right: 15px;
+}
+
+.door-right {
+    right: 0;
+    border-radius: 0 10px 10px 0;
+    transform-origin: right center;
+}
+
+.door-right::before {
+    left: 15px;
+}
+
+.door-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    height: 80%;
+    background: radial-gradient(ellipse, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+}
+
+/* 扉を開くアニメーション */
+.hero.door-opened .door-left {
+    transform: rotateY(-110deg);
+}
+
+.hero.door-opened .door-right {
+    transform: rotateY(110deg);
+}
+
+.hero.door-opened .door-glow {
+    opacity: 1;
+}
+
+/* CTAボタン */
+.cta-button,
+.submit-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 40px;
+    background: var(--gradient-gold);
+    color: var(--color-white);
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: var(--shadow-gold);
+    transition: var(--transition-base);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.cta-button:hover,
+.submit-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 40px rgba(212, 175, 55, 0.5);
+}
+
+.cta-button:active,
+.submit-button:active {
+    transform: translateY(-1px);
+}
+
+.button-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-gold-shine);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% { left: -100%; }
+    20% { left: 100%; }
+    100% { left: 100%; }
+}
+
+/* スクロールインジケーター */
+.scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.scroll-indicator span {
+    display: block;
+    width: 24px;
+    height: 40px;
+    border: 2px solid var(--color-gold);
+    border-radius: 12px;
+    position: relative;
+}
+
+.scroll-indicator span::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 8px;
+    background: var(--color-gold);
+    border-radius: 2px;
+    animation: scroll-down 1.5s infinite;
+}
+
+@keyframes scroll-down {
+    0% { opacity: 1; top: 8px; }
+    100% { opacity: 0; top: 20px; }
+}
+
+/* =====================================================
+   B. 診断入力フォーム
+   ===================================================== */
+.form-section {
+    padding: 80px 0;
+    background: var(--color-white);
+}
+
+.section-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 6vw, 2rem);
+    text-align: center;
+    margin-bottom: 16px;
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.lead-text {
+    text-align: center;
+    color: var(--color-text-light);
+    margin-bottom: 40px;
+    font-size: 0.95rem;
+}
+
+.fortune-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text-light);
+}
+
+.form-group select {
+    padding: 16px 20px;
+    font-size: 1rem;
+    font-family: var(--font-sans);
+    border: 2px solid #E0E0E0;
+    border-radius: 12px;
+    background: var(--color-white);
+    color: var(--color-text);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23D4AF37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 20px;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: var(--color-gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+.submit-button {
+    margin-top: 16px;
+    width: 100%;
+}
+
+/* =====================================================
+   C. 診断結果表示
+   ===================================================== */
+.result-section {
+    padding: 60px 0 80px;
+    background: var(--gradient-hero-bg);
+    min-height: 100vh;
+}
+
+.result-card {
+    background: var(--color-white);
+    border-radius: 24px;
+    padding: 40px 24px;
+    box-shadow: var(--shadow-card);
+    text-align: center;
+    animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.result-header {
+    margin-bottom: 24px;
+}
+
+.result-label {
+    font-size: 0.95rem;
+    color: var(--color-text-light);
+}
+
+/* キャラクターエリア */
+.character-area {
+    margin-bottom: 32px;
+}
+
+.character-image {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFF9E6 0%, #E8D082 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    box-shadow: var(--shadow-gold);
+    border: 4px solid var(--color-gold-light);
+}
+
+.type-name {
+    font-family: var(--font-serif);
+    font-size: clamp(1.3rem, 5vw, 1.6rem);
+    color: var(--color-gold-dark);
+    margin-bottom: 8px;
+}
+
+.type-catchcopy {
+    font-size: 1rem;
+    color: var(--color-text-light);
+    font-weight: 500;
+}
+
+/* 結果詳細 */
+.result-details {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 40px;
+    text-align: left;
+}
+
+.detail-item {
+    padding: 20px;
+    background: var(--color-white-soft);
+    border-radius: 16px;
+    border-left: 4px solid var(--color-gold);
+}
+
+.detail-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-gold-dark);
+    margin-bottom: 8px;
+}
+
+.detail-title .icon {
+    font-size: 1.2rem;
+}
+
+.detail-text {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: var(--color-text);
+}
+
+/* CTAエリア */
+.cta-area {
+    background: linear-gradient(135deg, #FFF9E6 0%, #FEF3C7 100%);
+    border-radius: 16px;
+    padding: 32px 20px;
+    margin-bottom: 24px;
+}
+
+.cta-text {
+    font-size: 0.95rem;
+    color: var(--color-text);
+    margin-bottom: 20px;
+    line-height: 1.8;
+}
+
+.line-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 32px;
+    background: var(--color-line-green);
+    color: var(--color-white);
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 50px;
+    transition: var(--transition-base);
+    box-shadow: 0 4px 20px rgba(6, 199, 85, 0.4);
+}
+
+.line-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(6, 199, 85, 0.5);
+}
+
+.line-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* 再診断ボタン */
+.retry-button {
+    background: transparent;
+    color: var(--color-text-light);
+    border: 2px solid #E0E0E0;
+    padding: 12px 32px;
+    font-size: 0.9rem;
+    font-family: var(--font-sans);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.retry-button:hover {
+    border-color: var(--color-gold);
+    color: var(--color-gold-dark);
+}
+
+/* =====================================================
+   フッター
+   ===================================================== */
+.footer {
+    padding: 24px;
+    text-align: center;
+    background: var(--color-white-soft);
+    color: var(--color-text-light);
+    font-size: 0.85rem;
+}
+
+/* =====================================================
+   レスポンシブ対応
+   ===================================================== */
+@media (min-width: 768px) {
+    .hero {
+        padding: 60px 40px;
+    }
+
+    .main-visual {
+        max-width: 350px;
+    }
+
+    .form-section {
+        padding: 100px 0;
+    }
+
+    .fortune-form {
+        flex-direction: row;
+        flex-wrap: wrap;
+        max-width: 500px;
+    }
+
+    .form-group {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .form-group:last-of-type {
+        margin-right: 0;
+    }
+
+    .submit-button {
+        flex-basis: 100%;
+    }
+
+    .result-card {
+        padding: 60px 40px;
+    }
+
+    .character-image {
+        width: 180px;
+        height: 180px;
+        font-size: 5rem;
+    }
+
+    .result-details {
+        flex-direction: row;
+    }
+
+    .detail-item {
+        flex: 1;
+    }
+}
+
+/* =====================================================
+   アニメーション・ユーティリティ
+   ===================================================== */
+.fade-in {
+    animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ローディング状態 */
+.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    border: 3px solid transparent;
+    border-top-color: var(--color-white);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
