@@ -7,8 +7,11 @@
 // 設定・定数
 // =====================================================
 
-// LINE公式アカウントID（変更可能）
-const LINE_ID = '@example_id';
+// LINE公式アカウントID
+const LINE_ID = '@042rsqoj';
+
+// LINE友だち追加URL
+const LINE_ADD_FRIEND_URL = `https://line.me/R/ti/p/${LINE_ID}`;
 
 // 十干（日干）データ
 const JIKKAN_DATA = [
@@ -114,22 +117,36 @@ const JIKKAN_DATA = [
     }
 ];
 
+// 現在の診断結果を保持
+let currentResult = null;
+
+// =====================================================
+// デバイス判定
+// =====================================================
+
+/**
+ * PCかどうかを判定
+ * @returns {boolean}
+ */
+function isPC() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isMobile = /iphone|ipod|android.*mobile|windows.*phone|mobile/.test(userAgent);
+    const isTablet = /ipad|android(?!.*mobile)/.test(userAgent);
+    return !isMobile && !isTablet;
+}
+
 // =====================================================
 // 四柱推命計算ロジック
 // =====================================================
 
 /**
  * 日干を計算する
- * 日干支番号の計算式を使用
  * @param {number} year - 年
  * @param {number} month - 月
  * @param {number} day - 日
  * @returns {number} - 日干インデックス (0-9)
  */
 function calculateNikkan(year, month, day) {
-    // 日干支番号を計算するための関数
-    // 1900年1月31日を基準（日干支番号 = 0）として計算
-
     // 基準日: 1900年1月31日
     const baseDate = new Date(1900, 0, 31);
     const targetDate = new Date(year, month - 1, day);
@@ -172,8 +189,9 @@ let elements = {};
 function init() {
     // DOM要素を取得
     elements = {
-        hero: document.getElementById('hero'),
+        doorOverlay: document.getElementById('doorOverlay'),
         openDoorBtn: document.getElementById('openDoorBtn'),
+        mainContent: document.getElementById('mainContent'),
         formSection: document.getElementById('form'),
         form: document.getElementById('fortuneForm'),
         birthYear: document.getElementById('birthYear'),
@@ -186,7 +204,13 @@ function init() {
         fortuneStyle: document.getElementById('fortuneStyle'),
         fortuneTip: document.getElementById('fortuneTip'),
         lineButton: document.getElementById('lineButton'),
-        retryButton: document.getElementById('retryButton')
+        showQrButton: document.getElementById('showQrButton'),
+        retryButton: document.getElementById('retryButton'),
+        qrModal: document.getElementById('qrModal'),
+        closeModal: document.getElementById('closeModal'),
+        qrCode: document.getElementById('qrCode'),
+        messagePreview: document.getElementById('messagePreview'),
+        copyMessage: document.getElementById('copyMessage')
     };
 
     // セレクトボックスを初期化
@@ -237,6 +261,37 @@ function setupEventListeners() {
 
     // 再診断ボタン
     elements.retryButton.addEventListener('click', handleRetry);
+
+    // PC用: QRコード表示ボタン
+    if (elements.showQrButton) {
+        elements.showQrButton.addEventListener('click', handleShowQr);
+    }
+
+    // モーダル閉じる
+    if (elements.closeModal) {
+        elements.closeModal.addEventListener('click', closeQrModal);
+    }
+
+    // モーダル外クリックで閉じる
+    if (elements.qrModal) {
+        elements.qrModal.addEventListener('click', (e) => {
+            if (e.target === elements.qrModal) {
+                closeQrModal();
+            }
+        });
+    }
+
+    // メッセージコピーボタン
+    if (elements.copyMessage) {
+        elements.copyMessage.addEventListener('click', handleCopyMessage);
+    }
+
+    // ESCキーでモーダルを閉じる
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && elements.qrModal.classList.contains('active')) {
+            closeQrModal();
+        }
+    });
 }
 
 /**
@@ -244,12 +299,12 @@ function setupEventListeners() {
  */
 function handleDoorOpen() {
     // 扉を開くクラスを追加
-    elements.hero.classList.add('door-opened');
+    elements.doorOverlay.classList.add('opened');
 
-    // アニメーション後にフォームへスクロール
+    // アニメーション完了後に扉を非表示
     setTimeout(() => {
-        elements.formSection.scrollIntoView({ behavior: 'smooth' });
-    }, 800);
+        elements.doorOverlay.classList.add('hidden');
+    }, 1500);
 }
 
 /**
@@ -283,6 +338,14 @@ function handleFormSubmit(e) {
     const nikkanIndex = calculateNikkan(year, month, day);
     const nikkanData = getNikkanData(nikkanIndex);
 
+    // 結果を保存
+    currentResult = {
+        data: nikkanData,
+        year: year,
+        month: month,
+        day: day
+    };
+
     // 結果を表示
     displayResult(nikkanData, year, month, day);
 }
@@ -310,7 +373,7 @@ function displayResult(data, year, month, day) {
     // 金運開花のタネ
     elements.fortuneTip.textContent = data.fortuneTip;
 
-    // LINEリンクを生成
+    // スマホ用: LINEリンクを生成
     const lineUrl = generateLineUrl(data, year, month, day);
     elements.lineButton.href = lineUrl;
 
@@ -318,8 +381,8 @@ function displayResult(data, year, month, day) {
     elements.formSection.style.display = 'none';
     elements.resultSection.style.display = 'block';
 
-    // 結果セクションへスクロール
-    elements.resultSection.scrollIntoView({ behavior: 'smooth' });
+    // 結果セクションの先頭へスクロール
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /**
@@ -331,13 +394,126 @@ function displayResult(data, year, month, day) {
  * @returns {string} - LINE URL
  */
 function generateLineUrl(data, year, month, day) {
-    const text = `診断結果：【${data.character}】
+    const text = generateMessageText(data, year, month, day);
+    const encodedText = encodeURIComponent(text);
+    return `https://line.me/R/oaMessage/${LINE_ID}/?text=${encodedText}`;
+}
+
+/**
+ * メッセージテキストを生成
+ * @param {Object} data - 十干データ
+ * @param {number} year - 年
+ * @param {number} month - 月
+ * @param {number} day - 日
+ * @returns {string} - メッセージテキスト
+ */
+function generateMessageText(data, year, month, day) {
+    return `診断結果：【${data.character}】
 生年月日：${year}年${month}月${day}日
 
 金運開花の秘訣を詳しく教えてください！`;
+}
 
-    const encodedText = encodeURIComponent(text);
-    return `https://line.me/R/oaMessage/${LINE_ID}/?text=${encodedText}`;
+/**
+ * PC用: QRコードモーダルを表示
+ */
+function handleShowQr() {
+    if (!currentResult) return;
+
+    const { data, year, month, day } = currentResult;
+
+    // メッセージプレビューを表示
+    const messageText = generateMessageText(data, year, month, day);
+    elements.messagePreview.textContent = messageText;
+
+    // QRコードを生成
+    elements.qrCode.innerHTML = '';
+
+    // QRCodeライブラリが読み込まれているか確認
+    if (typeof QRCode !== 'undefined') {
+        QRCode.toCanvas(LINE_ADD_FRIEND_URL, {
+            width: 200,
+            margin: 2,
+            color: {
+                dark: '#000000',
+                light: '#FFFFFF'
+            }
+        }, (error, canvas) => {
+            if (error) {
+                console.error('QRコード生成エラー:', error);
+                elements.qrCode.innerHTML = '<p style="color: #666;">QRコードの生成に失敗しました</p>';
+                return;
+            }
+            elements.qrCode.appendChild(canvas);
+        });
+    } else {
+        // フォールバック: QRコードAPIを使用
+        const qrImg = document.createElement('img');
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(LINE_ADD_FRIEND_URL)}`;
+        qrImg.alt = 'LINE QRコード';
+        qrImg.style.width = '200px';
+        qrImg.style.height = '200px';
+        elements.qrCode.appendChild(qrImg);
+    }
+
+    // モーダルを表示
+    elements.qrModal.classList.add('active');
+
+    // コピーボタンのリセット
+    elements.copyMessage.textContent = 'メッセージをコピー';
+    elements.copyMessage.classList.remove('copied');
+}
+
+/**
+ * QRコードモーダルを閉じる
+ */
+function closeQrModal() {
+    elements.qrModal.classList.remove('active');
+}
+
+/**
+ * メッセージをクリップボードにコピー
+ */
+async function handleCopyMessage() {
+    if (!currentResult) return;
+
+    const { data, year, month, day } = currentResult;
+    const messageText = generateMessageText(data, year, month, day);
+
+    try {
+        await navigator.clipboard.writeText(messageText);
+        elements.copyMessage.textContent = 'コピーしました！';
+        elements.copyMessage.classList.add('copied');
+
+        // 3秒後に元に戻す
+        setTimeout(() => {
+            elements.copyMessage.textContent = 'メッセージをコピー';
+            elements.copyMessage.classList.remove('copied');
+        }, 3000);
+    } catch (err) {
+        // フォールバック: execCommandを使用
+        const textarea = document.createElement('textarea');
+        textarea.value = messageText;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+            document.execCommand('copy');
+            elements.copyMessage.textContent = 'コピーしました！';
+            elements.copyMessage.classList.add('copied');
+
+            setTimeout(() => {
+                elements.copyMessage.textContent = 'メッセージをコピー';
+                elements.copyMessage.classList.remove('copied');
+            }, 3000);
+        } catch (e) {
+            alert('コピーに失敗しました。手動でコピーしてください。');
+        }
+
+        document.body.removeChild(textarea);
+    }
 }
 
 /**
@@ -349,10 +525,13 @@ function handleRetry() {
 
     // 結果を非表示、フォームを表示
     elements.resultSection.style.display = 'none';
-    elements.formSection.style.display = 'block';
+    elements.formSection.style.display = 'flex';
 
-    // フォームへスクロール
-    elements.formSection.scrollIntoView({ behavior: 'smooth' });
+    // 現在の結果をクリア
+    currentResult = null;
+
+    // ページ上部へスクロール
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // =====================================================

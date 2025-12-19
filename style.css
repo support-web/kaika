@@ -27,6 +27,7 @@
     --gradient-gold: linear-gradient(135deg, #D4AF37 0%, #F5E6A3 50%, #D4AF37 100%);
     --gradient-gold-shine: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
     --gradient-hero-bg: linear-gradient(180deg, #FAFAFA 0%, #FFF9E6 100%);
+    --gradient-door: linear-gradient(180deg, #E8D082 0%, #D4AF37 30%, #B8960C 70%, #8B7209 100%);
 
     /* フォント */
     --font-sans: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
@@ -64,131 +65,139 @@ body {
 }
 
 /* =====================================================
-   A. ヒーローセクション（トップ画面）
+   全画面扉オーバーレイ
    ===================================================== */
-.hero {
-    min-height: 100vh;
+.door-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: var(--gradient-hero-bg);
-    position: relative;
-    padding: 40px 20px;
-    text-align: center;
+    perspective: 2000px;
 }
 
-.hero-content {
+/* 全画面扉 */
+.fullscreen-door {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background: var(--gradient-door);
+    transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+    box-shadow: inset 0 0 100px rgba(255, 255, 255, 0.2);
+}
+
+.fullscreen-door.door-left {
+    left: 0;
+    transform-origin: left center;
+    border-right: 3px solid var(--color-gold-dark);
+}
+
+.fullscreen-door.door-right {
+    right: 0;
+    transform-origin: right center;
+    border-left: 3px solid var(--color-gold-dark);
+}
+
+/* 扉の装飾 */
+.door-decoration {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
     display: flex;
     flex-direction: column;
+    justify-content: space-around;
     align-items: center;
-    gap: 24px;
+}
+
+.door-panel {
+    width: 70%;
+    height: 35%;
+    border: 4px solid var(--color-gold-dark);
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.door-handle {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background: radial-gradient(circle at 30% 30%, #F5E6A3, #B8960C);
+    border-radius: 50%;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3), inset 0 1px 3px rgba(255,255,255,0.5);
+}
+
+.door-left .door-handle {
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.door-right .door-handle {
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 扉の上のコンテンツ */
+.door-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 20px;
+}
+
+/* 扉を開くアニメーション */
+.door-overlay.opened {
+    pointer-events: none;
+}
+
+.door-overlay.opened .fullscreen-door.door-left {
+    transform: rotateY(-105deg);
+}
+
+.door-overlay.opened .fullscreen-door.door-right {
+    transform: rotateY(105deg);
+}
+
+.door-overlay.opened .door-content {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* 扉が完全に開いた後に非表示 */
+.door-overlay.hidden {
+    display: none;
 }
 
 /* サイトロゴ */
 .site-logo {
     font-family: var(--font-serif);
-    font-size: clamp(2rem, 8vw, 3rem);
+    font-size: clamp(2rem, 8vw, 3.5rem);
     font-weight: 700;
-    background: var(--gradient-gold);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: none;
+    color: var(--color-white);
+    text-shadow: 0 2px 20px rgba(0,0,0,0.3), 0 0 40px rgba(212, 175, 55, 0.5);
     letter-spacing: 0.1em;
+    margin-bottom: 16px;
 }
 
 /* キャッチコピー */
 .catchcopy {
     font-family: var(--font-serif);
-    font-size: clamp(0.9rem, 4vw, 1.2rem);
-    color: var(--color-text-light);
+    font-size: clamp(0.9rem, 4vw, 1.3rem);
+    color: rgba(255,255,255,0.9);
     letter-spacing: 0.2em;
-}
-
-/* メインビジュアル（扉） */
-.main-visual {
-    width: 100%;
-    max-width: 300px;
-    aspect-ratio: 3 / 4;
-    margin: 20px 0;
-}
-
-.door-container {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    perspective: 1000px;
-}
-
-.door {
-    position: absolute;
-    top: 0;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(180deg, #E8D082 0%, #D4AF37 50%, #B8960C 100%);
-    border: 3px solid var(--color-gold-dark);
-    box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.3);
-    transition: transform 0.8s ease;
-    transform-style: preserve-3d;
-}
-
-.door::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 20px;
-    height: 20px;
-    background: var(--color-gold-dark);
-    border-radius: 50%;
-    transform: translateY(-50%);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
-
-.door-left {
-    left: 0;
-    border-radius: 10px 0 0 10px;
-    transform-origin: left center;
-}
-
-.door-left::before {
-    right: 15px;
-}
-
-.door-right {
-    right: 0;
-    border-radius: 0 10px 10px 0;
-    transform-origin: right center;
-}
-
-.door-right::before {
-    left: 15px;
-}
-
-.door-glow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60%;
-    height: 80%;
-    background: radial-gradient(ellipse, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.6s ease;
-    pointer-events: none;
-}
-
-/* 扉を開くアニメーション */
-.hero.door-opened .door-left {
-    transform: rotateY(-110deg);
-}
-
-.hero.door-opened .door-right {
-    transform: rotateY(110deg);
-}
-
-.hero.door-opened .door-glow {
-    opacity: 1;
+    text-shadow: 0 1px 10px rgba(0,0,0,0.3);
+    margin-bottom: 40px;
 }
 
 /* CTAボタン */
@@ -199,25 +208,26 @@ body {
     align-items: center;
     justify-content: center;
     padding: 18px 40px;
-    background: var(--gradient-gold);
-    color: var(--color-white);
+    background: var(--color-white);
+    color: var(--color-gold-dark);
     font-family: var(--font-serif);
     font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: 0.1em;
-    border: none;
+    border: 3px solid var(--color-gold);
     border-radius: 50px;
     cursor: pointer;
     overflow: hidden;
-    box-shadow: var(--shadow-gold);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.2);
     transition: var(--transition-base);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .cta-button:hover,
 .submit-button:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 40px rgba(212, 175, 55, 0.5);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+    background: var(--gradient-gold);
+    color: var(--color-white);
 }
 
 .cta-button:active,
@@ -241,47 +251,36 @@ body {
     100% { left: 100%; }
 }
 
-/* スクロールインジケーター */
-.scroll-indicator {
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.scroll-indicator span {
-    display: block;
-    width: 24px;
-    height: 40px;
-    border: 2px solid var(--color-gold);
-    border-radius: 12px;
+/* =====================================================
+   メインコンテンツ
+   ===================================================== */
+.main-content {
+    min-height: 100vh;
+    background: var(--gradient-hero-bg);
     position: relative;
 }
 
-.scroll-indicator span::before {
-    content: '';
+/* 光のエフェクト */
+.light-effect {
     position: absolute;
-    top: 8px;
+    top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 4px;
-    height: 8px;
-    background: var(--color-gold);
-    border-radius: 2px;
-    animation: scroll-down 1.5s infinite;
-}
-
-@keyframes scroll-down {
-    0% { opacity: 1; top: 8px; }
-    100% { opacity: 0; top: 20px; }
+    width: 100%;
+    max-width: 800px;
+    height: 300px;
+    background: radial-gradient(ellipse at center top, rgba(255, 249, 230, 1) 0%, transparent 70%);
+    pointer-events: none;
 }
 
 /* =====================================================
-   B. 診断入力フォーム
+   診断入力フォーム
    ===================================================== */
 .form-section {
     padding: 80px 0;
-    background: var(--color-white);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
 }
 
 .section-title {
@@ -348,10 +347,14 @@ body {
 .submit-button {
     margin-top: 16px;
     width: 100%;
+    background: var(--gradient-gold);
+    color: var(--color-white);
+    border: none;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* =====================================================
-   C. 診断結果表示
+   診断結果表示
    ===================================================== */
 .result-section {
     padding: 60px 0 80px;
@@ -482,9 +485,12 @@ body {
     font-size: 1rem;
     font-weight: 700;
     text-decoration: none;
+    border: none;
     border-radius: 50px;
+    cursor: pointer;
     transition: var(--transition-base);
     box-shadow: 0 4px 20px rgba(6, 199, 85, 0.4);
+    font-family: var(--font-sans);
 }
 
 .line-button:hover {
@@ -516,6 +522,140 @@ body {
 }
 
 /* =====================================================
+   PC/SP表示切り替え
+   ===================================================== */
+.sp-only {
+    display: inline-flex;
+}
+
+.pc-only {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .sp-only {
+        display: none;
+    }
+
+    .pc-only {
+        display: inline-flex;
+    }
+}
+
+/* =====================================================
+   モーダル（QRコード表示用）
+   ===================================================== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--color-white);
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    animation: fadeInUp 0.3s ease;
+}
+
+.modal-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--color-text-light);
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.modal-close:hover {
+    color: var(--color-text);
+}
+
+.modal-title {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--color-gold-dark);
+    margin-bottom: 24px;
+}
+
+.qr-code {
+    margin: 0 auto 24px;
+    padding: 16px;
+    background: var(--color-white);
+    border-radius: 16px;
+    display: inline-block;
+}
+
+.qr-code canvas {
+    display: block;
+}
+
+.modal-description {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.message-preview {
+    background: var(--color-white-soft);
+    border: 1px solid #E0E0E0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    text-align: left;
+    font-size: 0.85rem;
+    color: var(--color-text);
+    white-space: pre-line;
+    line-height: 1.6;
+}
+
+.copy-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--gradient-gold);
+    color: var(--color-white);
+    font-size: 0.9rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: var(--transition-base);
+    font-family: var(--font-sans);
+}
+
+.copy-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-gold);
+}
+
+.copy-button.copied {
+    background: var(--color-line-green);
+}
+
+/* =====================================================
    フッター
    ===================================================== */
 .footer {
@@ -530,14 +670,6 @@ body {
    レスポンシブ対応
    ===================================================== */
 @media (min-width: 768px) {
-    .hero {
-        padding: 60px 40px;
-    }
-
-    .main-visual {
-        max-width: 350px;
-    }
-
     .form-section {
         padding: 100px 0;
     }
@@ -577,6 +709,10 @@ body {
 
     .detail-item {
         flex: 1;
+    }
+
+    .door-panel {
+        width: 60%;
     }
 }
 

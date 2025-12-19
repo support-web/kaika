@@ -11,119 +11,156 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- A. トップ画面 (First View) -->
-    <section id="hero" class="hero">
-        <div class="hero-content">
+    <!-- 全画面扉オーバーレイ -->
+    <div id="doorOverlay" class="door-overlay">
+        <!-- 左の扉 -->
+        <div class="fullscreen-door door-left">
+            <div class="door-decoration">
+                <div class="door-panel"></div>
+                <div class="door-panel"></div>
+                <div class="door-handle"></div>
+            </div>
+        </div>
+        <!-- 右の扉 -->
+        <div class="fullscreen-door door-right">
+            <div class="door-decoration">
+                <div class="door-panel"></div>
+                <div class="door-panel"></div>
+                <div class="door-handle"></div>
+            </div>
+        </div>
+
+        <!-- 扉の上に表示するコンテンツ -->
+        <div class="door-content">
             <h1 class="site-logo">金運開花の扉</h1>
             <p class="catchcopy">運命で金運を開花する扉</p>
-
-            <div class="main-visual">
-                <div class="door-container">
-                    <div class="door door-left"></div>
-                    <div class="door door-right"></div>
-                    <div class="door-glow"></div>
-                </div>
-            </div>
-
             <button id="openDoorBtn" class="cta-button">
                 <span class="button-text">扉を開いて運命を占う</span>
                 <span class="button-shine"></span>
             </button>
         </div>
+    </div>
 
-        <div class="scroll-indicator">
-            <span></span>
-        </div>
-    </section>
+    <!-- メインコンテンツ（扉の奥に隠れている） -->
+    <main id="mainContent" class="main-content">
+        <!-- 光のエフェクト -->
+        <div class="light-effect"></div>
 
-    <!-- B. 診断入力フォーム -->
-    <section id="form" class="form-section">
-        <div class="container">
-            <h2 class="section-title">生年月日を入力</h2>
-            <p class="lead-text">あなたの生年月日が、金運の鍵を握っています。</p>
+        <!-- 診断入力フォーム -->
+        <section id="form" class="form-section">
+            <div class="container">
+                <h2 class="section-title">生年月日を入力</h2>
+                <p class="lead-text">あなたの生年月日が、金運の鍵を握っています。</p>
 
-            <form id="fortuneForm" class="fortune-form">
-                <div class="form-group">
-                    <label for="birthYear">年</label>
-                    <select id="birthYear" required>
-                        <option value="">選択してください</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="birthMonth">月</label>
-                    <select id="birthMonth" required>
-                        <option value="">選択</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="birthDay">日</label>
-                    <select id="birthDay" required>
-                        <option value="">選択</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="submit-button">
-                    <span class="button-text">運命を鑑定する</span>
-                    <span class="button-shine"></span>
-                </button>
-            </form>
-        </div>
-    </section>
-
-    <!-- C. 診断結果表示 -->
-    <section id="result" class="result-section" style="display: none;">
-        <div class="container">
-            <div class="result-card">
-                <div class="result-header">
-                    <p class="result-label">あなたの金運タイプは...</p>
-                </div>
-
-                <div class="character-area">
-                    <div id="characterImage" class="character-image"></div>
-                    <h3 id="typeName" class="type-name"></h3>
-                    <p id="typeCatchcopy" class="type-catchcopy"></p>
-                </div>
-
-                <div class="result-details">
-                    <div class="detail-item">
-                        <h4 class="detail-title">
-                            <span class="icon">💰</span>
-                            金運スタイル
-                        </h4>
-                        <p id="fortuneStyle" class="detail-text"></p>
+                <form id="fortuneForm" class="fortune-form">
+                    <div class="form-group">
+                        <label for="birthYear">年</label>
+                        <select id="birthYear" required>
+                            <option value="">選択してください</option>
+                        </select>
                     </div>
 
-                    <div class="detail-item">
-                        <h4 class="detail-title">
-                            <span class="icon">🌱</span>
-                            金運開花のタネ
-                        </h4>
-                        <p id="fortuneTip" class="detail-text"></p>
+                    <div class="form-group">
+                        <label for="birthMonth">月</label>
+                        <select id="birthMonth" required>
+                            <option value="">選択</option>
+                        </select>
                     </div>
-                </div>
 
-                <div class="cta-area">
-                    <p class="cta-text">さらに詳しい金運開花の秘訣や、<br>今年の運勢を知るにはLINEへ</p>
-                    <a id="lineButton" href="#" class="line-button">
-                        <svg class="line-icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.349 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
-                        </svg>
-                        <span>LINEで詳細を受け取る</span>
-                    </a>
-                </div>
+                    <div class="form-group">
+                        <label for="birthDay">日</label>
+                        <select id="birthDay" required>
+                            <option value="">選択</option>
+                        </select>
+                    </div>
 
-                <button id="retryButton" class="retry-button">もう一度診断する</button>
+                    <button type="submit" class="submit-button">
+                        <span class="button-text">運命を鑑定する</span>
+                        <span class="button-shine"></span>
+                    </button>
+                </form>
             </div>
+        </section>
+
+        <!-- 診断結果表示 -->
+        <section id="result" class="result-section" style="display: none;">
+            <div class="container">
+                <div class="result-card">
+                    <div class="result-header">
+                        <p class="result-label">あなたの金運タイプは...</p>
+                    </div>
+
+                    <div class="character-area">
+                        <div id="characterImage" class="character-image"></div>
+                        <h3 id="typeName" class="type-name"></h3>
+                        <p id="typeCatchcopy" class="type-catchcopy"></p>
+                    </div>
+
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <h4 class="detail-title">
+                                <span class="icon">💰</span>
+                                金運スタイル
+                            </h4>
+                            <p id="fortuneStyle" class="detail-text"></p>
+                        </div>
+
+                        <div class="detail-item">
+                            <h4 class="detail-title">
+                                <span class="icon">🌱</span>
+                                金運開花のタネ
+                            </h4>
+                            <p id="fortuneTip" class="detail-text"></p>
+                        </div>
+                    </div>
+
+                    <div class="cta-area">
+                        <p class="cta-text">さらに詳しい金運開花の秘訣や、<br>今年の運勢を知るにはLINEへ</p>
+
+                        <!-- スマホ用: LINEボタン -->
+                        <a id="lineButton" href="#" class="line-button sp-only">
+                            <svg class="line-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.349 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+                            </svg>
+                            <span>LINEで詳細を受け取る</span>
+                        </a>
+
+                        <!-- PC用: QRコード表示ボタン -->
+                        <button id="showQrButton" class="line-button pc-only">
+                            <svg class="line-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.349 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+                            </svg>
+                            <span>LINEで詳細を受け取る</span>
+                        </button>
+                    </div>
+
+                    <button id="retryButton" class="retry-button">もう一度診断する</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- フッター -->
+        <footer class="footer">
+            <p>&copy; 2024 金運開花の扉</p>
+        </footer>
+    </main>
+
+    <!-- QRコードモーダル（PC用） -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content">
+            <button id="closeModal" class="modal-close">&times;</button>
+            <h3 class="modal-title">スマートフォンでQRコードを読み取ってください</h3>
+            <div id="qrCode" class="qr-code"></div>
+            <p class="modal-description">
+                QRコードを読み取り、LINEで友だち追加後、<br>
+                以下のメッセージを送信してください
+            </p>
+            <div id="messagePreview" class="message-preview"></div>
+            <button id="copyMessage" class="copy-button">メッセージをコピー</button>
         </div>
-    </section>
+    </div>
 
-    <!-- フッター -->
-    <footer class="footer">
-        <p>&copy; 2024 金運開花の扉</p>
-    </footer>
-
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
